@@ -28,8 +28,3 @@ test("POST to /api/v1/migrations should return 200", async () => {
   expect(Array.isArray(response2Body)).toBe(true);
   expect(response2Body.length).toBe(0);
 });
-
-// test("Migrations on database should be greater than 0", async () => {
-//   const RanMigrations = await database.query("SELECT * FROM pgmigrations;");
-//   expect(RanMigrations.rows.length).toBeGreaterThan(0);
-// });
