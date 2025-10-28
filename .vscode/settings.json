@@ -1,3 +1,10 @@
 {
-  "cSpell.words": ["isready", "pgmigrations", "podman", "postgres", "tabnews"]
+  "cSpell.words": [
+    "isready",
+    "pgmigrations",
+    "podman",
+    "postgres",
+    "tabnews",
+    "timestamptz"
+  ]
 }
