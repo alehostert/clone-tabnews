@@ -26,6 +26,10 @@ describe("GET /api/v1/user", () => {
 
       expect(response.status).toBe(200);
 
+      const cacheControl = response.headers.get("Cache-Control");
+      expect(cacheControl).toBe(
+        "no-store, no-cache, max-age=0, must-revalidate",
+      );
       const responseBody = await response.json();
 
       expect(responseBody).toEqual({
@@ -34,7 +38,7 @@ describe("GET /api/v1/user", () => {
         email: createdUser.email,
         password: createdUser.password,
         created_at: createdUser.created_at.toISOString(),
-        updated_at: createdUser.created_at.toISOString(),
+        updated_at: createdUser.updated_at.toISOString(),
       });
 
       expect(uuidVersion(responseBody.id)).toBe(4);
@@ -91,7 +95,7 @@ describe("GET /api/v1/user", () => {
         email: createdUser.email,
         password: createdUser.password,
         created_at: createdUser.created_at.toISOString(),
-        updated_at: createdUser.created_at.toISOString(),
+        updated_at: createdUser.updated_at.toISOString(),
       });
 
       expect(uuidVersion(responseBody.id)).toBe(4);
