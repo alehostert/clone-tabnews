@@ -18,8 +18,7 @@ async function findOneValidByToken(sessionToken) {
           sessions
         WHERE
           token = $1
-        AND
-          expires_at > NOW()
+        AND expires_at > NOW()
         LIMIT
           1
       ;`,
@@ -87,10 +86,35 @@ async function renew(sessionId) {
   }
 }
 
+async function expireById(sessionId) {
+  const expiredSessionObject = runUpdateQuery(sessionId);
+  return expiredSessionObject;
+
+  async function runUpdateQuery(sessionId) {
+    const results = await database.query({
+      text: `
+      UPDATE
+        sessions
+      SET
+        expires_at = NOW(),
+        updated_at = NOW()
+      WHERE
+        id = $1
+      RETURNING
+        *
+      ;`,
+      values: [sessionId],
+    });
+
+    return results.rows[0];
+  }
+}
+
 const session = {
   create,
   findOneValidByToken,
   renew,
+  expireById,
   EXPIRATION_IN_MILLISECONDS,
 };
 
