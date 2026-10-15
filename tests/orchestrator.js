@@ -2,6 +2,7 @@ import retry from "async-retry";
 import { faker } from "@faker-js/faker";
 
 import database from "infra/database.js";
+import activation from "models/activation";
 import migrator from "models/migrator.js";
 import user from "models/user.js";
 import session from "models/session.js";
@@ -64,6 +65,10 @@ async function createSession(userId) {
   return await session.create(userId);
 }
 
+async function activateUser(userObject) {
+  return await activation.activateUserByUserId(userObject.id);
+}
+
 async function deleteAllEmails() {
   await fetch(`${emailHttpUrl}/messages`, {
     method: "DELETE",
@@ -75,6 +80,10 @@ async function getLastEmail() {
   const emailListBody = await emailListResponse.json();
   const lastEmailItem = emailListBody.pop();
 
+  if (!lastEmailItem) {
+    return null;
+  }
+
   const emailTextResponse = await fetch(
     `${emailHttpUrl}/messages/${lastEmailItem.id}.plain`,
   );
@@ -82,6 +91,16 @@ async function getLastEmail() {
 
   lastEmailItem.text = emailTextBody;
   return lastEmailItem;
+}
+
+function extractUuid(text) {
+  const match = text.match("([a-z0-9]{8}-)([a-z0-9]{4}-){3}([a-z0-9]{12})");
+  return match ? match[0] : null;
+}
+
+async function addFeaturesToUser(userObject, features) {
+  const updatedUser = await user.addFeatures(userObject.id, features);
+  return updatedUser;
 }
 
 const orchestrator = {
@@ -92,6 +111,9 @@ const orchestrator = {
   createSession,
   deleteAllEmails,
   getLastEmail,
+  extractUuid,
+  activateUser,
+  addFeaturesToUser,
 };
 
 export default orchestrator;
